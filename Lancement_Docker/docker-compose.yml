@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo
+    container_name: db-container
+    volumes:
+      - mongo-data:/data/db
+    ports:
+      - "27017:27017"
+    networks:
+      - mern-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: back
+    ports:
+      - "5201:3000"
+    networks:
+      - mern-network
+    depends_on:
+      - mongodb
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: front
+    ports:
+      - "5173:80"
+    networks:
+      - mern-network
+    depends_on:
+      - backend
+
+volumes:
+  mongo-data:
+
+networks:
+  mern-network:
+    driver: bridge
